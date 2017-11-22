@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+<font size="6"><b>Listado de aplicaciones analizadas</b></font>
+<br>
+<br>
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in ultimosadd %}
+  <tr>
+    <td><a href="{% url 'index' %}buscar/?busqueda={{ x.HASH }}">{{ x.HASH }}</a></td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+ <br>
+ <br>
+
+
+
+{% endblock %}

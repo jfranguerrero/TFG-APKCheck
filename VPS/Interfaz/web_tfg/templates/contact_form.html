@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+   <font size="6"><b>Contacto</b></font>
+
+
+    {% if errors %}
+        <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+
+    {% endif %}
+
+
+    <form action="" method="post">
+
+        {% csrf_token %}
+        <p>Asunto: <br><input type="text" name="subject"></p>
+        <p>Su e-mail (opcional): <br><input type="text" name="email"></p>
+        <p>Mensaje: <br><textarea name="message" rows="10" cols="50"></textarea></p>
+        <input type="submit" value="Enviar">
+
+{% endblock %}

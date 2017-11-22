@@ -1,0 +1,54 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block body %}
+
+
+
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in resultado %}
+  <tr>
+    <td>{{ x.HASH }}</td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+
+</div>
+
+
+<br><br><br>
+<div class="">
+<div class="table-responsive col-xs-5">
+  <table class="table">
+    <tr>
+    <th>Permisos Peligrosos</th>
+  </tr>
+
+{% for x in permisos %}
+	{% for y in x.permisos %}	
+  
+  <tr>
+   	 <td><font color="red">{{ y }}</font></td>
+</tr>
+	{% endfor %}
+{% endfor %}
+  </table>
+
+</div>
+</div>
+
+
+
+
+{% endblock %}

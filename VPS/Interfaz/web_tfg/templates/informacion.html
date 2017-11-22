@@ -1,0 +1,580 @@
+
+
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block body %}
+
+{% ifequal eshash 0 %}
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for hl in hashlist %}
+  <tr>
+    <td><a href="{% url 'index' %}buscar/?busqueda={{ hl.HASH }}">{{ hl.HASH }}</a></td>
+    <td>{{ hl.nombre_paquete }}</td>
+    <td>{{ hl.estado }}</td>
+    <td>{{ hl.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+</div>
+
+{% else %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+
+<script>
+$(document).ready(function() {
+
+  // Build the chart
+  Highcharts.chart('contpermisos', {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'Número de permisos peligrosos requeridos'
+    },
+    tooltip: {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: false
+        },
+        showInLegend: true
+      }
+    },
+    series: [{
+      name: 'Brands',
+      colorByPoint: true,
+      data: [{
+        name: 'Permisos peligrosos no requeridos',
+        y: (24-{{permisos.0.permisos|length}})*100/24,
+      }, {
+        name: 'Permisos peligrosos requeridos',
+        y: {{permisos.0.permisos|length}}*100/24,
+        sliced: true,
+        selected: true,
+        color: 'red'
+      }]
+    }]
+  });
+});
+
+</script>
+
+<script>
+$(document).ready(function() {
+Highcharts.chart('contmalips', {
+    chart: {
+        type: 'pie',
+        options3d: {
+            enabled: true,
+            alpha: 45
+        }
+    },
+    title: {
+        text: 'Número de IPs maliciosas accedidas por País'
+    },
+
+    plotOptions: {
+        pie: {
+            innerSize: 100,
+            depth: 45
+        }
+    },
+    series: [{
+        name: 'Número de IPs',
+        data: [
+          {% load app_tags %}
+          {% for dip in paises %}
+            ['{{dip|mongo_id}}',{{dip.sum}}],
+            {% endfor %}
+        ]
+    }]
+});
+});
+</script>
+
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Datos de la aplicación</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in resultado %}
+  <tr>
+    <td>{{ x.HASH }}</td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+
+</div>
+
+
+	</div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+<br><br>
+
+{% if tiene_valoracion_permisos %} 
+
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse3">Peligrosidad según permisos</a>
+        </h4>
+      </div>
+      <div id="collapse3" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+<div class="table-responsive">
+ <div class="progress">
+	{% if puntuacion_permisos.0 <= 0.0 %}
+	<span style="width: 0%;"><span>{{ puntuacion_permisos.0 }}</span></span>
+	{% elif puntuacion_permisos.0 < 0.2 %}
+	<span style="width: 20%;"><span>{{ puntuacion_permisos.0 }}</span></span>
+	{% elif puntuacion_permisos.0 < 0.4 %}
+	<span class="green" style="width: 40%;"><span>{{ puntuacion_permisos.0 }}</span></span>
+	{% elif puntuacion_permisos.0  < 0.6 %}
+	<span class="orange" style="width: 60%;"><span>{{ puntuacion_permisos.0 }}</span></span>
+	{% elif puntuacion_permisos.0 < 0.8 %}
+	<span class="red" style="width: 870%;"><span>{{ puntuacion_permisos.0 }}</span></span>
+	{% elif puntuacion_permisos.0 <= 1 %}
+	<span class="blue" style="width: 100%;"><span>{{ puntuacion_permisos.0 }}</span></span>
+	{% endif %}	  
+
+    </div>
+
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<br><br>
+{% endif %}
+
+{% if tiene_valoracion_sys %}
+
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse4">Peligrosidad según llamadas al sistema</a>
+        </h4>
+      </div>
+      <div id="collapse4" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+<div class="table-responsive">
+ <div class="progress">
+	{% if valoracion_sys.0 <= 0.0 %}
+        <span style="width: 0%;"><span>{{ valoracion_sys.0 }}</span></span>
+        {% elif valoracion_sys.0 < 0.2 %}
+        <span style="width: 20%;"><span>{{ valoracion_sys.0 }}</span></span>
+        {% elif valoracion_sys.0 < 0.4 %}
+        <span class="green" style="width: 40%;"><span>{{ valoracion_sys.0 }}</span></span>
+        {% elif valoracion_sys.0  < 0.6 %}
+        <span class="orange" style="width: 60%;"><span>{{ valoracion_sys.0 }}</span></span>
+        {% elif valoracion_sys.0 < 0.8 %}
+        <span class="red" style="width: 870%;"><span>{{ valoracion_sys.0 }}</span></span>
+        {% elif valoracion_sys.0 < 100000 %}
+        <span class="blue" style="width: 100%;"><span>{{ valoracion_sys.0 }}</span></span>
+        {% endif %}
+
+    </div>
+
+</div>  
+
+        </div>
+      </div>  
+    </div>
+  </div>
+
+<br><br>
+{% endif %}
+
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapsepermisos">Permisos que pueden comprometer información personal</a>
+        </h4>
+      </div>
+      <div id="collapsepermisos" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+      	<div class="col-xs-6">
+      <div class="table-responsive">
+        <table class="table">
+          <tr>
+          <th>Permisos Peligrosos</th>
+        </tr>
+
+      {% for x in permisos %}
+              {% for y in x.permisos %}
+
+        <tr>
+               <td><font color="red">{{ y }}</font></td>
+      </tr>
+              {% endfor %}
+      {% endfor %}
+        </table>
+
+      </div>
+      </div>
+
+
+      <div class="col-xs-6">
+      <div class="table-responsive">
+        <table class="table">
+          <tr>
+          <th>Permisos Peligrosos</th>
+        </tr>
+
+        <tr>
+               <td><div id="contpermisos" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></td>
+      </tr>
+
+        </table>
+
+      </div>
+      </div>
+
+	</div>
+      </div>
+    </div>
+  </div>
+
+
+  {% if num_apk_install > 0 %}
+    <br><br>
+  <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapseapkinstall">Intentos de instalaciones de Apks de terceros</a>
+          </h4>
+        </div>
+        <div id="collapseapkinstall" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table">
+                <tr>
+                <th>Clase</th>
+                <th>Mensaje</th>
+              </tr>
+
+              {% for v in apk_install %}
+                {% for w in v.log %}
+              <tr>
+                <td>{{ w.Clase }}</td>
+                <td>{{ w.Mensaje }}</td>
+            </tr>
+                {% endfor %}
+              {% endfor %}
+              </table>
+
+            </div>
+
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+  {% if num_inject > 0 %}
+    <br><br>
+  <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapseinject">Intentos de de inyección a máquina Dalvik</a>
+          </h4>
+        </div>
+        <div id="collapseinject" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table">
+                <tr>
+                <th>Clase</th>
+                <th>Mensaje</th>
+              </tr>
+
+              {% for ij in injects %}
+                {% for t in ij.log %}
+              <tr>
+                <td>{{ t.Clase }}</td>
+                <td>{{ t.Mensaje }}</td>
+            </tr>
+                {% endfor %}
+              {% endfor %}
+              </table>
+
+            </div>
+
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+  {% if num_root > 0 %}
+    <br><br>
+  <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapseroot">Uso de directorio root</a>
+          </h4>
+        </div>
+        <div id="collapseroot" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table">
+                <tr>
+                <th>Clase</th>
+                <th>Mensaje</th>
+              </tr>
+
+              {% for rt in roots %}
+                {% for rti in rt.log %}
+              <tr>
+                <td>{{ rti.Clase }}</td>
+                <td>{{ rti.Mensaje }}</td>
+            </tr>
+                {% endfor %}
+              {% endfor %}
+              </table>
+
+            </div>
+
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+
+  {% if num_ips > 0 %}
+    <br><br>
+  <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapsesips">IPs declaradas en el código</a>
+          </h4>
+        </div>
+        <div id="collapsesips" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table">
+                <tr>
+                <th>Clase</th>
+                <th>Mensaje</th>
+              </tr>
+
+              {% for si in s_ips %}
+                {% for sip in si.log %}
+              <tr>
+                <td>{{ sip.Clase }}</td>
+                <td>{{ sip.Mensaje }}</td>
+            </tr>
+                {% endfor %}
+              {% endfor %}
+              </table>
+
+            </div>
+
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+{% if num_sms > 0 %}
+<br><br>
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapsesms">Envío de SMS</a>
+        </h4>
+      </div>
+      <div id="collapsesms" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+              <th>Clase</th>
+              <th>Mensaje</th>
+            </tr>
+
+            {% for sm in smss %}
+              {% for smc in sm.log %}
+            <tr>
+              <td>{{ smc.Clase }}</td>
+              <td>{{ smc.Mensaje }}</td>
+          </tr>
+              {% endfor %}
+            {% endfor %}
+            </table>
+
+          </div>
+
+        </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+{% if num_pay > 0 %}
+<br><br>
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapsepay">Uso de Payloads</a>
+        </h4>
+      </div>
+      <div id="collapsepay" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <div class="table-responsive">
+            <table class="table">
+              <tr>
+              <th>Clase</th>
+              <th>Mensaje</th>
+            </tr>
+
+            {% for pt in payload %}
+              {% for pid in pt.log %}
+            <tr>
+              <td>{{ pid.Clase }}</td>
+              <td>{{ pid.Mensaje }}</td>
+          </tr>
+              {% endfor %}
+            {% endfor %}
+            </table>
+
+          </div>
+
+        </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+{% if num_dips > 0 %}
+<br><br>
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapseipsmal">IPs maliciosas accedidas</a>
+        </h4>
+      </div>
+      <div id="collapseipsmal" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+
+                	<div class="col-xs-6">
+                <div class="table-responsive">
+                  <table class="table">
+                    <tr>
+                    <th>IP</th>
+                    <th>Blacklist</th>
+                  </tr>
+
+                {% for ml in maliciosas %}
+                        {% for ta in ml.IPs %}
+
+                  <tr>
+                         <td>{{ ta.IP }}</td>
+                         <td>{{ ta.blacklist }}</td>
+                </tr>
+                        {% endfor %}
+                {% endfor %}
+                  </table>
+
+                </div>
+                </div>
+
+
+                <div class="col-xs-6">
+                <div class="table-responsive">
+                  <table class="table">
+                    <tr>
+                    <th>Países de las IPs maliciosas</th>
+                  </tr>
+
+                  <tr>
+                         <td><div id="contmalips" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></td>
+                </tr>
+
+                  </table>
+
+                </div>
+                </div>
+
+
+          </div>
+
+        </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
+
+{% endifequal %}
+{% endblock %}

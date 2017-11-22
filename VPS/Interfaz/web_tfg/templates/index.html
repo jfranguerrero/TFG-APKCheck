@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+<font size="6"><b>Últimas aplicaciones añadidas</b></font>
+<br>
+<br>
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in ultimosadd %}
+  <tr>
+    <td><a href="buscar/?busqueda={{ x.HASH }}">{{ x.HASH }}</a></td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+ <br>
+ <br>
+
+<font size="6"><b>Últimas aplicaciones consultadas</b></font>
+
+<br>
+<br>
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in ultimosvisit %}
+  <tr>
+    <td><a href="buscar/?busqueda={{ x.HASH }}">{{ x.HASH }}</a></td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+
+</div>
+    
+        
+{% endblock %}

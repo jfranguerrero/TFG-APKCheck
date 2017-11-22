@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block body %}
+   <body>	   
+      {% if saved %}
+	{% if existe %}
+	<strong>El fichero ya existe. Puede acceder al análisis en el siguiente enlace.</strong>
+	<br>
+	<a href="{% url 'index' %}buscar/?busqueda={{ hash_apk }}">{{ hash_apk }}</a>
+	{% endif %}
+	{% if not existe %}
+         <strong>Archivo subido correctamente.En breve estará disponible el análisis en el siguiente enlace.</strong>
+	<br>
+        <a href="{% url 'index' %}buscar/?busqueda={{ hash_apk }}">{{ hash_apk }}</a>
+      {% endif %}
+     {% endif %} 
+      {% if not saved %}
+         <strong>Error al subir el archivo. Solo son válidos los ficheros .apk</strong>
+      {% endif %}
+      
+   </body>
+{% endblock %}
+

@@ -1,0 +1,218 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block body %}
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+
+<script>
+$(document).ready(function() {
+
+  // Build the chart
+  Highcharts.chart('contpermisos', {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+    },
+    title: {
+      text: 'Número de permisos peligrosos requeridos'
+    },
+    tooltip: {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: false
+        },
+        showInLegend: true
+      }
+    },
+    series: [{
+      name: 'Brands',
+      colorByPoint: true,
+      data: [{
+        name: 'Permisos peligrosos no requeridos',
+        y: (24-{{permisos.0.permisos|length}})*100/24,
+      }, {
+        name: 'Permisos peligrosos requeridos',
+        y: {{permisos.0.permisos|length}}*100/24,
+        sliced: true,
+        selected: true,
+        color: 'red'
+      }]
+    }]
+  });
+});
+
+</script>
+
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Datos de la aplicación</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse in">
+        <div class="panel-body">
+
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in resultado %}
+  <tr>
+    <td>{{ x.HASH }}</td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+
+</div>
+
+
+	</div>
+       
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Hash</th>
+    <th>Nombre Paquete</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+  </tr>
+
+  {% for x in resultado %}
+  <tr>
+    <td>{{ x.HASH }}</td>
+    <td>{{ x.nombre_paquete }}</td>
+    <td>{{ x.estado }}</td>
+    <td>{{ x.fecha }}</td>
+</tr>
+  {% endfor %}
+  </table>
+
+</div>
+
+
+<br><br><br>
+
+
+
+<div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse1">Permisos peligros de la aplicación</a>
+        </h4>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <div class="panel-body">
+
+<div class="col-xs-6">
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Permisos Peligrosos</th>
+  </tr>
+
+{% for x in permisos %}
+        {% for y in x.permisos %}
+
+  <tr>
+         <td><font color="red">{{ y }}</font></td>
+</tr>
+        {% endfor %}
+{% endfor %}
+  </table>  
+
+</div>
+</div>
+
+
+<div class="col-xs-6">
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Permisos Peligrosos</th>
+  </tr>
+
+  <tr>
+         <td><div id="contpermisos" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></td>
+</tr>
+
+  </table>
+
+</div>
+</div>
+
+
+	</div>
+       
+      </div>
+    </div>
+  </div>
+
+
+
+<div class="col-xs-6">
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Permisos Peligrosos</th>
+  </tr>
+
+{% for x in permisos %}
+	{% for y in x.permisos %}	
+  
+  <tr>
+   	 <td><font color="red">{{ y }}</font></td>
+</tr>
+	{% endfor %}
+{% endfor %}
+  </table>
+
+</div>
+</div>
+
+
+<div class="col-xs-6">
+<div class="table-responsive">
+  <table class="table">
+    <tr>
+    <th>Permisos Peligrosos</th>
+  </tr>
+
+  <tr>
+         <td><div id="contpermisos" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></td>
+</tr>
+
+  </table>
+
+</div>
+</div>
+
+
+{% endblock %}
